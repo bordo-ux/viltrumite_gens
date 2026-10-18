@@ -1,0 +1,23 @@
+{
+  "screen.viltrumite_gens.title": "Choose Your Viltrumite Level",
+  "screen.viltrumite_gens.custom": "Custom Genetics",
+  "screen.viltrumite_gens.custom_title": "Build Your Genetics",
+  "screen.viltrumite_gens.confirm": "Confirm",
+  "screen.viltrumite_gens.back": "Back",
+  "screen.viltrumite_gens.points_left": "Points left: %s",
+  "level.viltrumite_gens.soldier": "Level 1 - Viltrumite Soldier",
+  "level.viltrumite_gens.mark": "Level 2 - Mark",
+  "level.viltrumite_gens.conquest": "Level 3 - Conquest",
+  "level.viltrumite_gens.nolan": "Level 4 - Nolan",
+  "level.viltrumite_gens.thragg": "Level 5 - Thragg",
+  "level.viltrumite_gens.argall": "Level 6 - Emperor Argall",
+  "stat.viltrumite_gens.health": "Health",
+  "stat.viltrumite_gens.damage": "Damage",
+  "stat.viltrumite_gens.durability": "Durability",
+  "stat.viltrumite_gens.speed": "Speed",
+  "stat.viltrumite_gens.regen": "Regeneration",
+  "message.viltrumite_gens.chosen": "Your genetics have been set.",
+  "message.viltrumite_gens.denied": "You cannot change your genetics right now.",
+  "message.viltrumite_gens.reset": "Genetics reset. Open the menu again to choose.",
+  "message.viltrumite_gens.adapted": "Your body adapts: %s"
+}

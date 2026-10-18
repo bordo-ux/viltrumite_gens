@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="viltrumite_gens"
+version="0.1.0"
+displayName="Viltrumite Gens"
+description='''
+Viltrumite modu icin ek mod: 6 guc seviyesi (Viltrumlu askerden Imparator Argall'a),
+ozel genetik olusturma ve yara sonrasi sinirsiz guclenme (adaptasyon) sistemi.
+'''
+
+[[dependencies.viltrumite_gens]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.viltrumite_gens]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"
+
+# ANA MOD BAGIMLILIGI
+# Viltrumite modunun gercek mod ID'sini ogrenince modId'yi duzelt ve mandatory=true yap.
+# (ID'yi jar icindeki META-INF/mods.toml dosyasindan okuyabilirsin.)
+[[dependencies.viltrumite_gens]]
+modId="viltrumite"
+mandatory=false
+versionRange="[1.11.0,)"
+ordering="AFTER"
+side="BOTH"

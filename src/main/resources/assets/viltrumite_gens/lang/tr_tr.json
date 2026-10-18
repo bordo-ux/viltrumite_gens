@@ -1,0 +1,23 @@
+{
+  "screen.viltrumite_gens.title": "Viltrumlu Seviyeni Seç",
+  "screen.viltrumite_gens.custom": "Özel Genetik",
+  "screen.viltrumite_gens.custom_title": "Genetiğini Oluştur",
+  "screen.viltrumite_gens.confirm": "Onayla",
+  "screen.viltrumite_gens.back": "Geri",
+  "screen.viltrumite_gens.points_left": "Kalan puan: %s",
+  "level.viltrumite_gens.soldier": "Seviye 1 - Viltrumlu Asker",
+  "level.viltrumite_gens.mark": "Seviye 2 - Mark",
+  "level.viltrumite_gens.conquest": "Seviye 3 - Conquest",
+  "level.viltrumite_gens.nolan": "Seviye 4 - Nolan",
+  "level.viltrumite_gens.thragg": "Seviye 5 - Thragg",
+  "level.viltrumite_gens.argall": "Seviye 6 - İmparator Argall",
+  "stat.viltrumite_gens.health": "Can",
+  "stat.viltrumite_gens.damage": "Hasar",
+  "stat.viltrumite_gens.durability": "Dayanıklılık",
+  "stat.viltrumite_gens.speed": "Hız",
+  "stat.viltrumite_gens.regen": "İyileşme",
+  "message.viltrumite_gens.chosen": "Genetiğin ayarlandı.",
+  "message.viltrumite_gens.denied": "Şu an genetiğini değiştiremezsin.",
+  "message.viltrumite_gens.reset": "Genetik sıfırlandı. Seçmek için menüyü tekrar aç.",
+  "message.viltrumite_gens.adapted": "Vücudun adapte oluyor: %s"
+}
