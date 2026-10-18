@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:red_wool"
+    },
+    "title": {
+      "translate": "advancement.viltrumite_gens.nolan.title"
+    },
+    "description": {
+      "translate": "advancement.viltrumite_gens.nolan.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "viltrumite_gens:conquest",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -7,6 +7,7 @@ import com.viltrumitegens.data.GensStat;
 import com.viltrumitegens.network.GensNetwork;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -84,8 +85,14 @@ public class GensEvents {
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer sp)) return;
-        GensCapability.get(sp).ifPresent(d ->
-                AdaptationHandler.recordDamage(sp, d, event.getSource(), event.getAmount()));
+        GensCapability.get(sp).ifPresent(d -> {
+            AdaptationHandler.recordDamage(sp, d, event.getSource(), event.getAmount());
+            // "Think, Mark, think!" - 7+ kalplik dususten sag kalk
+            if (d.hasChosen() && event.getSource().is(DamageTypeTags.IS_FALL)
+                    && event.getAmount() >= 14f && sp.getHealth() - event.getAmount() > 0f) {
+                GensAdvancements.grant(sp, "think_mark_think");
+            }
+        });
     }
 
     @SubscribeEvent

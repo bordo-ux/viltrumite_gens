@@ -14,6 +14,7 @@ public class GensData {
     private final float[] woundBy = new float[GensStat.COUNT];
     private float peakDeficit;
     private int cooldown;
+    private int adaptCount;
 
     // ---------- okuma ----------
     public boolean hasChosen() { return chosen; }
@@ -89,6 +90,16 @@ public class GensData {
         adaptPct[s.ordinal()] = v;
     }
 
+    public int adaptCount() { return adaptCount; }
+    public void incrementAdaptCount() { adaptCount++; }
+
+    /** Tum istatistiklerdeki adaptasyon yuzdelerinin toplami. */
+    public float totalAdaptation() {
+        float t = 0;
+        for (float f : adaptPct) t += f;
+        return t;
+    }
+
     public int cooldown() { return cooldown; }
     public void setCooldown(int ticks) { cooldown = ticks; }
     public void tickCooldown() { if (cooldown > 0) cooldown--; }
@@ -109,6 +120,7 @@ public class GensData {
         System.arraycopy(o.woundBy, 0, woundBy, 0, GensStat.COUNT);
         this.peakDeficit = o.peakDeficit;
         this.cooldown = o.cooldown;
+        this.adaptCount = o.adaptCount;
     }
 
     // ---------- NBT ----------
@@ -124,6 +136,7 @@ public class GensData {
         }
         t.putFloat("peak", peakDeficit);
         t.putInt("cooldown", cooldown);
+        t.putInt("adaptCount", adaptCount);
         return t;
     }
 
@@ -138,5 +151,6 @@ public class GensData {
         }
         peakDeficit = t.getFloat("peak");
         cooldown = t.getInt("cooldown");
+        adaptCount = t.getInt("adaptCount");
     }
 }

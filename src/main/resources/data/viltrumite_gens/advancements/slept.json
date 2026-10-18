@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:red_bed"
+    },
+    "title": {
+      "translate": "advancement.viltrumite_gens.slept.title"
+    },
+    "description": {
+      "translate": "advancement.viltrumite_gens.slept.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "viltrumite_gens:chosen",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:slept_in_bed"
+    }
+  }
+}

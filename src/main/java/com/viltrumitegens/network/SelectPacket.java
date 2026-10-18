@@ -4,6 +4,7 @@ import com.viltrumitegens.capability.GensCapability;
 import com.viltrumitegens.config.GensConfig;
 import com.viltrumitegens.data.GensLevel;
 import com.viltrumitegens.data.GensStat;
+import com.viltrumitegens.logic.GensAdvancements;
 import com.viltrumitegens.logic.GensStats;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -77,6 +78,7 @@ public class SelectPacket {
                 GensStats.apply(sp, d);
                 sp.setHealth(sp.getMaxHealth());
                 sp.sendSystemMessage(Component.translatable("message.viltrumite_gens.chosen"));
+                GensAdvancements.onChoice(sp, d);
             });
         });
         c.setPacketHandled(true);

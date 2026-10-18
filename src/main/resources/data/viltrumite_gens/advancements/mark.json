@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:yellow_dye"
+    },
+    "title": {
+      "translate": "advancement.viltrumite_gens.mark.title"
+    },
+    "description": {
+      "translate": "advancement.viltrumite_gens.mark.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "viltrumite_gens:chosen",
+  "criteria": {
+    "done": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

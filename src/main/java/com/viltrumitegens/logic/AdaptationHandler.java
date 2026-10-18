@@ -12,7 +12,9 @@ import net.minecraft.world.damagesource.DamageSource;
  * Yara sonrasi guclenme:
  *   kazanim(%) = katsayi x n^us   (n = tek bir iyilesme doneminde yenilenen yara, yarim kalp = 1)
  * Varsayilan: 0.08 x n^2  ->  yarim kalp %0.08, 1 kalp %0.32, 5 kalp %8, 10 kalp %32.
- * Kazanim, yaranin hangi hasar turunden geldigine gore ilgili istatistige dagitilir.
+ *
+ * Kazanimin "healthShare" kadari (varsayilan %40) her zaman CAN'a gider, kalani
+ * yaranin hangi hasar turunden geldigine gore ilgili istatistige dagitilir.
  */
 public final class AdaptationHandler {
     private AdaptationHandler() {}
@@ -67,24 +69,38 @@ public final class AdaptationHandler {
         }
 
         double gain = GensConfig.ADAPT_COEFFICIENT.get() * Math.pow(n, GensConfig.ADAPT_EXPONENT.get());
+        double healthShare = GensConfig.ADAPT_HEALTH_SHARE.get();
         boolean cap = GensConfig.ADAPT_CAP_ENABLED.get();
         float capPct = GensConfig.ADAPT_CAP_PERCENT.get().floatValue();
 
+        // Pay hesabi: sabit CAN payi + kalani hasar turune gore
+        float[] adds = new float[GensStat.COUNT];
+        adds[GensStat.HEALTH.ordinal()] += (float) (gain * healthShare);
+        double rest = gain * (1.0 - healthShare);
+        for (GensStat s : GensStat.values()) {
+            adds[s.ordinal()] += (float) (rest * data.woundShare(s));
+        }
+
         StringBuilder msg = new StringBuilder();
         for (GensStat s : GensStat.values()) {
-            float share = data.woundShare(s);
-            if (share <= 0f) continue;
-            float add = (float) (gain * share);
+            float add = adds[s.ordinal()];
+            if (add <= 0f) continue;
             data.addAdaptation(s, add, cap, capPct);
             if (msg.length() > 0) msg.append(", ");
-            msg.append(String.format("%s +%.2f%%",
+            msg.append(String.format(java.util.Locale.ROOT, "%s +%.2f%%",
                     Component.translatable(s.langKey()).getString(), add));
         }
 
         data.resetWound();
         data.setCooldown(GensConfig.GAIN_COOLDOWN_TICKS.get());
+        data.incrementAdaptCount();
         GensStats.apply(player, data);
+
+        // Yeni azami cana kadar iyilestir (odul hissi)
+        player.setHealth(player.getMaxHealth());
+
         player.displayClientMessage(
                 Component.translatable("message.viltrumite_gens.adapted", msg.toString()), true);
+        GensAdvancements.onAdaptation(player, data, n);
     }
 }
