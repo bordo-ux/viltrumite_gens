@@ -15,6 +15,10 @@ public class GensConfig {
     public static final ForgeConfigSpec.DoubleValue DEATH_LOSS;
     public static final ForgeConfigSpec.IntValue GAIN_COOLDOWN_TICKS;
 
+    // --- Hareket / gorus acisi ---
+    public static final ForgeConfigSpec.DoubleValue SPEED_MULTIPLIER_CAP;
+    public static final ForgeConfigSpec.DoubleValue FOV_MAX_MODIFIER;
+
     // --- Ozel genetik ---
     public static final ForgeConfigSpec.IntValue CUSTOM_POINT_POOL;
     public static final ForgeConfigSpec.IntValue CUSTOM_MIN_PER_GENE;
@@ -45,6 +49,15 @@ public class GensConfig {
                 .defineInRange("deathLoss", 0.25D, 0.0D, 1.0D);
         GAIN_COOLDOWN_TICKS = b.comment("Iki adaptasyon kazanimi arasindaki en kisa sure (tick, 20 = 1 sn).")
                 .defineInRange("gainCooldownTicks", 100, 0, 72000);
+        b.pop();
+
+        b.push("movement");
+        SPEED_MULTIPLIER_CAP = b.comment("Hiz carpaninin ust siniri (seviye + ozel genetik + adaptasyon toplami).",
+                "Cok yuksek hiz ekran bozulmasina ve chunk yukleme sorunlarina yol acar.")
+                .defineInRange("speedMultiplierCap", 3.0D, 1.0D, 20.0D);
+        FOV_MAX_MODIFIER = b.comment("Hizdan dolayi gorus acisinin (FOV) genisleyebilecegi en yuksek carpan (istemci).",
+                "Vanilla kosu yaklasik 1.1-1.15. Ekran uzuyorsa dusur, kapatmak icin 5 yap.")
+                .defineInRange("fovMaxModifier", 1.15D, 1.0D, 5.0D);
         b.pop();
 
         b.push("custom_genetics");

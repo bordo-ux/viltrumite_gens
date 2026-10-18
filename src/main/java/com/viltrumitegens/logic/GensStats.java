@@ -1,5 +1,6 @@
 package com.viltrumitegens.logic;
 
+import com.viltrumitegens.config.GensConfig;
 import com.viltrumitegens.data.GensData;
 import com.viltrumitegens.data.GensStat;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,7 +34,7 @@ public final class GensStats {
                 AttributeModifier.Operation.MULTIPLY_BASE);
 
         set(player, Attributes.MOVEMENT_SPEED, SPEED_ID, "gens_speed",
-                on ? data.multiplier(GensStat.SPEED) - 1.0 : 0.0,
+                on ? Math.min(data.multiplier(GensStat.SPEED), GensConfig.SPEED_MULTIPLIER_CAP.get()) - 1.0 : 0.0,
                 AttributeModifier.Operation.MULTIPLY_BASE);
 
         // Dayaniklilik: geri itilme direnci (hasar azaltma ayrica GensEvents'te)
