@@ -8,6 +8,11 @@ Viltrumite modunun (1.11.0) ek modu. Forge 1.20.1, Java 17.
 - **Adaptasyon**: ağır yara iyileşince kalıcı güçlenme. `kazanım(%) = 0.08 x n^2` (n = yenilenen yarım kalp). Sınırsız (config'ten sınır açılabilir).
 - Seçim ekranı: ilk girişte otomatik, sonra `/gens menu`.
 
+## Şarjlı yumruk (Conquest ve üstü)
+Boş elle **sol tıka basılı tut** (~0,5 sn'den uzun), ekranın altında şarj çubuğu dolar, bırakınca baktığın noktada şok dalgası patlar.
+Hızlıca tıklamak normal vuruştur. Yarıçap ve hasar şarjla ve seviyeyle büyür; Nolan ve üstü blok da kırar (yukarı ve aşağı).
+Ayarlar: `config/viltrumite_gens-common.toml` -> `[shockwave]`.
+
 ## Komutlar
 - `/gens menu`  seçim ekranını açar
 - `/gens info`  çarpanları ve adaptasyon bonuslarını gösterir

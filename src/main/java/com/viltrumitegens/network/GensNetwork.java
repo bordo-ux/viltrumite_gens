@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class GensNetwork {
-    private static final String PROTOCOL = "1";
+    private static final String PROTOCOL = "2";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(ViltrumiteGens.MODID, "main"),
@@ -23,6 +23,8 @@ public final class GensNetwork {
                 OpenMenuPacket::encode, OpenMenuPacket::decode, OpenMenuPacket::handle);
         CHANNEL.registerMessage(id++, SelectPacket.class,
                 SelectPacket::encode, SelectPacket::decode, SelectPacket::handle);
+        CHANNEL.registerMessage(id++, ChargePacket.class,
+                ChargePacket::encode, ChargePacket::decode, ChargePacket::handle);
     }
 
     /** Oyuncuya secim menusunu actirir (ayarlar pakete konur, istemci config'ine bagli kalmaz). */

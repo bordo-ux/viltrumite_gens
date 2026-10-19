@@ -10,87 +10,64 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Seviyeyle buyuyen tahrip alani.
  *
- * 1) Sok dalgasi: guclu bir vurusta hedefin cevresine alan hasari ve (yuksek seviyede) blok kirma.
- *    Canlilara etki yaricapi = entityRadius x seviyenin ALAN carpani.
- *    Blok kirma yaricapi    = blockRadius  x seviyenin TAHRIP carpani.
- * 2) Patlama buyutme: oyuncunun yol actigi patlamalar (ana mod patlama kullaniyorsa) ayni carpanlarla buyur.
+ * 1) burst(): sarjli yumrugun sok dalgasi ({@link Charge} tetikler).
+ *    Canlilara etki yaricapi = entityRadius x ALAN carpani x sarj,
+ *    blok kirma yaricapi    = blockRadius  x TAHRIP carpani x sarj.
+ *    Bloklar yukari VE asagi (kure seklinde) kirilir.
+ * 2) onDetonate(): oyuncunun yol actigi patlamalar (ana mod patlama kullaniyorsa) ayni carpanlarla buyur.
  *
  * Ana modun kendi ozel yetenekleri patlama kullanmiyorsa onlara buradan mudahale edilemez;
  * onlar icin ana modun kodu gerekir.
  */
 @Mod.EventBusSubscriber(modid = ViltrumiteGens.MODID)
 public class Shockwave {
-    private static boolean active = false;
-    private static final Map<UUID, Long> LAST = new HashMap<>();
 
-    @SubscribeEvent
-    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        LAST.remove(event.getEntity().getUUID());
-    }
+    // ------------------------------------------------------------ 1) sarjli sok dalgasi
 
-    // ------------------------------------------------------------ 1) sok dalgasi
-
-    @SubscribeEvent
-    public static void onHurt(LivingHurtEvent event) {
-        if (active) return;
-        DamageSource src = event.getSource();
-        if (!(src.getEntity() instanceof ServerPlayer sp) || src.getDirectEntity() != sp) return;
-        if (!GensConfig.SHOCK_ENABLED.get()) return;
-        if (event.getAmount() < GensConfig.SHOCK_MIN_DAMAGE.get()) return;
-
-        GensData d = GensCapability.get(sp).orElse(null);
-        if (d == null || !d.hasChosen()) return;
-
-        boolean entityPhase = d.areaMultiplier() >= GensConfig.SHOCK_MIN_AREA.get();
-        boolean blockPhase = d.destructionMultiplier() >= GensConfig.SHOCK_BLOCK_THRESHOLD.get();
-        if (!entityPhase && !blockPhase) return;
-
+    /** c noktasinda, sarj orani frac (0-1) ile sok dalgasi yap. */
+    public static void burst(ServerPlayer sp, GensData d, Vec3 c, float frac) {
         ServerLevel level = sp.serverLevel();
-        long now = level.getGameTime();
-        Long last = LAST.get(sp.getUUID());
-        if (last != null && now - last < GensConfig.SHOCK_COOLDOWN_TICKS.get()) return;
-        LAST.put(sp.getUUID(), now);
-
-        LivingEntity victim = event.getEntity();
-        Vec3 c = victim.position().add(0, victim.getBbHeight() * 0.5, 0);
         double maxR = GensConfig.SHOCK_MAX_RADIUS.get();
+        double scale = 0.4 + 0.6 * frac;
 
-        double entityR = entityPhase ? Math.min(maxR, GensConfig.SHOCK_ENTITY_RADIUS.get() * d.areaMultiplier()) : 0;
-        double blockR = blockPhase ? Math.min(maxR, GensConfig.SHOCK_BLOCK_RADIUS.get() * d.destructionMultiplier()) : 0;
-
-        active = true;
-        try {
-            if (entityR > 0) hurtNearby(level, sp, victim, c, entityR, event.getAmount());
-            if (blockR > 0) breakBlocks(level, sp, c, blockR, d.destructionMultiplier());
-        } finally {
-            active = false;
+        double entityR = 0;
+        if (d.areaMultiplier() >= GensConfig.SHOCK_MIN_AREA.get()) {
+            entityR = GensConfig.SHOCK_ENTITY_RADIUS.get() * d.areaMultiplier() * scale;
         }
+        entityR = Math.min(maxR, Math.max(1.5, entityR));   // hedefe her zaman vursun
+
+        double blockR = 0;
+        if (d.destructionMultiplier() >= GensConfig.SHOCK_BLOCK_THRESHOLD.get()) {
+            blockR = Math.min(maxR, GensConfig.SHOCK_BLOCK_RADIUS.get() * d.destructionMultiplier() * scale);
+        }
+
+        double attack = sp.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float hit = (float) ((attack + 3.0 * d.powerMultiplier()) * (0.5 + 1.5 * frac)
+                * GensConfig.CHARGE_DAMAGE_SCALE.get());
+
+        hurtNearby(level, sp, c, entityR, hit);
+        if (blockR > 0) breakBlocks(level, sp, c, blockR, d.destructionMultiplier());
 
         double r = Math.max(entityR, blockR);
         level.sendParticles(ParticleTypes.EXPLOSION, c.x, c.y, c.z,
@@ -102,24 +79,22 @@ public class Shockwave {
                 (float) Math.min(4.0, 1.0 + r * 0.15), 0.9f);
     }
 
-    private static void hurtNearby(ServerLevel level, ServerPlayer sp, LivingEntity victim,
-                                   Vec3 c, double r, float hit) {
+    private static void hurtNearby(ServerLevel level, ServerPlayer sp, Vec3 c, double r, float hit) {
         AABB box = new AABB(c, c).inflate(r);
-        float base = hit * GensConfig.SHOCK_DAMAGE_FRACTION.get().floatValue();
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box)) {
-            if (e == sp || e == victim || !e.isAlive()) continue;
+            if (e == sp || !e.isAlive()) continue;
             if (e instanceof Player && !GensConfig.SHOCK_HURT_PLAYERS.get()) continue;
             if (e instanceof TamableAnimal t && t.isOwnedBy(sp)) continue;
 
-            double dist = e.position().distanceTo(c);
+            double dist = e.position().add(0, e.getBbHeight() * 0.5, 0).distanceTo(c);
             if (dist > r) continue;
-            double falloff = 1.0 - dist / r;
-            float dmg = (float) (base * falloff);
+            double falloff = 1.0 - 0.75 * (dist / r);        // merkezde tam, kenarda %25
+            float dmg = (float) (hit * falloff);
             if (dmg <= 0.5f) continue;
 
             e.hurt(level.damageSources().playerAttack(sp), dmg);
-            Vec3 push = e.position().subtract(c).normalize().scale(0.2 + 0.6 * falloff);
-            e.push(push.x, 0.25, push.z);
+            Vec3 push = e.position().subtract(c).normalize().scale(0.3 + 0.9 * falloff);
+            e.push(push.x, 0.3, push.z);
             e.hurtMarked = true;
         }
     }
@@ -131,7 +106,6 @@ public class Shockwave {
         BlockPos origin = BlockPos.containing(c);
         BlockPos self = sp.blockPosition();
         int ri = (int) Math.ceil(r);
-        int minY = sp.getBlockY();
         int count = 0;
 
         outer:
@@ -140,8 +114,12 @@ public class Shockwave {
                 for (int dz = -ri; dz <= ri; dz++) {
                     if (dx * dx + dy * dy + dz * dz > r * r) continue;
                     BlockPos pos = origin.offset(dx, dy, dz);
-                    if (pos.getY() < minY) continue;                       // oyuncunun ayagi altini kirma
-                    if (pos.equals(self) || pos.equals(self.above())) continue;
+
+                    // Oyuncunun kendi bastigi zemini ve vucudunu kirma (boslukta dusmesin)
+                    if (pos.getY() <= self.getY()
+                            && Math.abs(pos.getX() - self.getX()) <= 1
+                            && Math.abs(pos.getZ() - self.getZ()) <= 1) continue;
+                    if (pos.equals(self.above())) continue;
 
                     BlockState st = level.getBlockState(pos);
                     if (st.isAir() || !st.getFluidState().isEmpty()) continue;

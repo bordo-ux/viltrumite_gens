@@ -34,9 +34,6 @@ public class GensEvents {
         if (!(event.getEntity() instanceof ServerPlayer sp)) return;
         GensCapability.get(sp).ifPresent(d -> {
             GensStats.apply(sp, d);
-            if (!d.hasChosen() && GensConfig.AUTO_OPEN_MENU.get() && ViltrumiteBridge.shouldOfferMenu(sp)) {
-                GensNetwork.openMenu(sp);
-            }
         });
     }
 
@@ -99,7 +96,17 @@ public class GensEvents {
     public static void onTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide) return;
         if (event.player instanceof ServerPlayer sp) {
-            GensCapability.get(sp).ifPresent(d -> AdaptationHandler.tick(sp, d));
+            GensCapability.get(sp).ifPresent(d -> {
+                AdaptationHandler.tick(sp, d);
+                Charge.tick(sp, d);
+
+                // Menuyu girisin hemen ardindan degil, dunya yuklendikten biraz sonra (3 sn) ac.
+                // (Giriste acilirsa yukleme ekrani menunun ustune biner ve menu kapanir.)
+                if (sp.tickCount == 60 && !d.hasChosen()
+                        && GensConfig.AUTO_OPEN_MENU.get() && ViltrumiteBridge.shouldOfferMenu(sp)) {
+                    GensNetwork.openMenu(sp);
+                }
+            });
         }
     }
 }

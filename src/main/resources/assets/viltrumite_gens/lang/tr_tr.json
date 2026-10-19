@@ -78,5 +78,6 @@
   "advancement.viltrumite_gens.slept.title": "Kahramanlar da Uyur",
   "advancement.viltrumite_gens.slept.desc": "Bir yatakta uyu. Yarın ödevin var.",
   "advancement.viltrumite_gens.cookie.title": "Debbie'nin Kurabiyeleri",
-  "advancement.viltrumite_gens.cookie.desc": "Bir kurabiye ye. Annen onaylıyor."
+  "advancement.viltrumite_gens.cookie.desc": "Bir kurabiye ye. Annen onaylıyor.",
+  "message.viltrumite_gens.charge": "Şarj: %s"
 }

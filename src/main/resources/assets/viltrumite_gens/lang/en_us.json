@@ -78,5 +78,6 @@
   "advancement.viltrumite_gens.slept.title": "Even Heroes Need Sleep",
   "advancement.viltrumite_gens.slept.desc": "Sleep in a bed. You have homework tomorrow.",
   "advancement.viltrumite_gens.cookie.title": "Debbie's Cookies",
-  "advancement.viltrumite_gens.cookie.desc": "Eat a cookie. Mom approves."
+  "advancement.viltrumite_gens.cookie.desc": "Eat a cookie. Mom approves.",
+  "message.viltrumite_gens.charge": "Charge: %s"
 }
